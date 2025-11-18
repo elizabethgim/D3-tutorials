@@ -1,63 +1,67 @@
-// const width = 600, height = 400;
+const svg = d3.select('svg');
 
-// const svg = d3.select('#div')
-//     .append("svg")
-//     .attr("width", width)
-//     .attr("height", height);
+const width = +(svg.attr('width'));
+const height = +svg.attr('height');
 
-// svg.append("path")
-// .attr("d", "M50 50 L150 50 L100 100 Z")
-// .attr("stroke", "black")
-// .attr("fill", "lightblue")
-// .attr("stroke-width", 2);
+const g = svg
+    .append('g')
+        .attr('transform', `translate(${width/2}, ${height/2})`);
 
-// const svg = d3.select('#treeGraph')
-//     .append("svg")
-//     .attr("width", 120)
-//     .attr("height", 120);
+const circle = g
+    .append('circle')
+        .attr('r', height/2)
+        .attr('fill', 'yellow')
+        .attr('stroke', 'black');
 
-// svg.append("circle")
-// .attr("cx", 50)
-// .attr("cy", 50)
-// .attr("r", 20)
-// .style("fill", "orange")
-// .on("mouseenter", function(){
-//     d3.select(this)
-//     .transition()
-//     .duration(500)
-//     .attr("r", 40)
-//     .style("fill", "tomato")
-// })
-// .on("mouseleave", function(){
-//     d3.select(this)
-//     .transition()
-//     .duration(500)
-//     .attr("r", 20)
-//     .style("fill", "orange");
-// });
+const eyeRadius = 30;
+const eyeSpacing = 100;
+const eyeYOffset = -70;
+const eyebrowWidth = 70;
+const eyebrowHeight = 15;
+const eyebrowYOffset = -70;
 
-// const tooltip = d3.select('#tooltip');
+const eyesG = g
+    .append('g')
+        .attr('transform', `translate(0, ${eyeYOffset})`);
 
-// let root, treeLayout;
+const eyebrowsG = eyesG
+  .append('g')
+    .attr('transform', `translate(0, ${eyebrowYOffset})`);
 
-// fetch("./data.json")
-// .then(response => response.json())
-// .then(data => {
-//     root = d3.hierarchy(data);
-//     console.log("root", root);
+eyebrowsG
+  .transition().duration(2000)
+    .attr('transform', `translate(0, ${eyebrowYOffset - 50 })`)
+  .transition().duration(2000)
+    .attr('transform', `translate(0, ${eyebrowYOffset})`);
 
-//     root.x0 = height / 2;
-//     root.y0 = 0;
+const leftEye = eyesG
+  .append('circle')
+    .attr('r', eyeRadius)
+    .attr('cx', - eyeSpacing);
+      
+const rightEye = eyesG
+  .append('circle')
+    .attr('r', eyeRadius)
+    .attr('cx', eyeSpacing);
 
-//     root.children?.forEach(collapse);
-//     function collapse(d){
-//         if(d.children){
-//             d._children = d.children;
-//             d._children.forEach(collapse);
-//             d.children = null;
-//         }
-//     }
+const leftEyebrow = eyebrowsG
+  .append('rect')
+    .attr('x', -eyeSpacing - eyebrowWidth/2)
+    .attr('width', eyebrowWidth)
+    .attr('height', eyebrowHeight);
 
-//     treeLayout = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
-//     renderTree({ d3, root, treeLayout, gNodes, gLinks, durration: 300});
-// })
+const rightEyebrow = eyebrowsG
+  .append('rect')
+    .attr('x', eyeSpacing - eyebrowWidth/2)
+    .attr('width', eyebrowWidth)
+    .attr('height', eyebrowHeight);
+
+const mouth = g
+  .append('path')
+    .attr('d', d3.arc()({
+      innerRadius: 150,
+      outerRadius: 170,
+      startAngle: Math.PI / 2,
+      endAngle: Math.PI * 3 / 2
+    })
+  )
