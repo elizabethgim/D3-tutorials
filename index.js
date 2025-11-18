@@ -1,67 +1,41 @@
 const svg = d3.select('svg');
 
-const width = +(svg.attr('width'));
+const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-const g = svg
-    .append('g')
-        .attr('transform', `translate(${width/2}, ${height/2})`);
+const render = data => {
+  const xValue = d => d.population;
+  const yValue = d => d.country;
+  const margin = {top:20, right:30, bottom:20, left:100};
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-const circle = g
-    .append('circle')
-        .attr('r', height/2)
-        .attr('fill', 'yellow')
-        .attr('stroke', 'black');
+  const xScale = d3.scaleLinear()
+    .domain([0, d3.max(data, xValue)])
+    .range([0, innerWidth]);
 
-const eyeRadius = 30;
-const eyeSpacing = 100;
-const eyeYOffset = -70;
-const eyebrowWidth = 70;
-const eyebrowHeight = 15;
-const eyebrowYOffset = -70;
+  const yScale = d3.scaleBand()
+      .domain(data.map(yValue))
+      .range([0, innerHeight])
+      .padding(0.1);
 
-const eyesG = g
-    .append('g')
-        .attr('transform', `translate(0, ${eyeYOffset})`);
+  const g = svg.append("g")
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
+  
+  g.append('g').call(d3.axisLeft(yScale));
+  g.append('g').call(d3.axisBottom(xScale))
+    .attr('transform', `translate(0, ${innerHeight})`);
 
-const eyebrowsG = eyesG
-  .append('g')
-    .attr('transform', `translate(0, ${eyebrowYOffset})`);
+  g.selectAll('rect').data(data)
+    .enter().append('rect')
+      .attr('y', d => yScale(yValue(d)))
+      .attr('width', d => xScale(xValue(d)))
+      .attr('height', yScale.bandwidth());
+};
 
-eyebrowsG
-  .transition().duration(2000)
-    .attr('transform', `translate(0, ${eyebrowYOffset - 50 })`)
-  .transition().duration(2000)
-    .attr('transform', `translate(0, ${eyebrowYOffset})`);
-
-const leftEye = eyesG
-  .append('circle')
-    .attr('r', eyeRadius)
-    .attr('cx', - eyeSpacing);
-      
-const rightEye = eyesG
-  .append('circle')
-    .attr('r', eyeRadius)
-    .attr('cx', eyeSpacing);
-
-const leftEyebrow = eyebrowsG
-  .append('rect')
-    .attr('x', -eyeSpacing - eyebrowWidth/2)
-    .attr('width', eyebrowWidth)
-    .attr('height', eyebrowHeight);
-
-const rightEyebrow = eyebrowsG
-  .append('rect')
-    .attr('x', eyeSpacing - eyebrowWidth/2)
-    .attr('width', eyebrowWidth)
-    .attr('height', eyebrowHeight);
-
-const mouth = g
-  .append('path')
-    .attr('d', d3.arc()({
-      innerRadius: 150,
-      outerRadius: 170,
-      startAngle: Math.PI / 2,
-      endAngle: Math.PI * 3 / 2
-    })
-  )
+d3.csv('data.csv').then(data => {
+  data.forEach(d => {
+    d.population = +d.population;
+  })
+  render(data);
+});

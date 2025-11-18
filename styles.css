@@ -3,16 +3,10 @@ body{
     overflow: hidden;
 }
 
-.highlighted{
-    color: red;
+rect {
+    fill : steelblue;
 }
 
-.lines{
-    stroke: black;
-    stroke-width: 10;
-}
-
-.lines path {
-    stroke: #03fc80;
-    stroke-linejoin: round;
+text {
+    font-size: 1.4em;
 }
